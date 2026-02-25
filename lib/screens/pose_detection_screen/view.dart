@@ -1,7 +1,8 @@
-import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
-
 import 'controller.dart';
+import 'widgets/camera_preview.dart';
+import 'widgets/error_message.dart';
+import 'widgets/loading_indicator.dart';
 
 class PoseDetectionScreen extends StatefulWidget {
   const PoseDetectionScreen({super.key});
@@ -34,28 +35,24 @@ class _PoseDetectionScreenState extends State<PoseDetectionScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Camera'),
-      ),
       body: _controller.initializeFuture == null
-          ? const Center(child: CircularProgressIndicator())
+          ? const LoadingIndicator()
           : FutureBuilder<void>(
               future: _controller.initializeFuture,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.done &&
                     _controller.cameraController != null &&
                     _controller.cameraController!.value.isInitialized) {
-                  return CameraPreview(_controller.cameraController!);
-                } else if (snapshot.hasError) {
-                  return const Center(
-                    child: Text('Camera initialization error'),
+                  return CameraPreviewWidget(
+                    cameraController: _controller.cameraController!,
                   );
+                } else if (snapshot.hasError) {
+                  return const ErrorMessage();
                 } else {
-                  return const Center(child: CircularProgressIndicator());
+                  return const LoadingIndicator();
                 }
               },
             ),
     );
   }
 }
-

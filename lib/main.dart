@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import 'constants/app_colors.dart';
 import 'screens/preview_screen/view.dart';
 
 void main() {
@@ -17,6 +17,7 @@ class MainApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
+        scaffoldBackgroundColor: AppColors.background,
       ),
       home: PreviewScreen(),
     );
