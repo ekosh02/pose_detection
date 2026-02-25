@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mlkit_pose_detection/google_mlkit_pose_detection.dart';
@@ -70,6 +71,7 @@ class _CameraPreviewWidgetState extends State<CameraPreviewWidget> {
                                 poses: poses,
                                 imageSize: imageSize,
                                 canvasSize: constraints.biggest,
+                                mirrorHorizontal: Platform.isAndroid,
                               ),
                             );
                           },

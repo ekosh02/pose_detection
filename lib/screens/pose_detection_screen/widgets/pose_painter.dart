@@ -2,18 +2,40 @@ import 'package:flutter/material.dart';
 import 'package:google_mlkit_pose_detection/google_mlkit_pose_detection.dart';
 
 class PosePainter extends CustomPainter {
+  static const _landmarkTypes = [
+    PoseLandmarkType.nose,
+    PoseLandmarkType.leftEye,
+    PoseLandmarkType.rightEye,
+    PoseLandmarkType.leftEar,
+    PoseLandmarkType.rightEar,
+    PoseLandmarkType.leftShoulder,
+    PoseLandmarkType.rightShoulder,
+    PoseLandmarkType.leftElbow,
+    PoseLandmarkType.rightElbow,
+    PoseLandmarkType.leftWrist,
+    PoseLandmarkType.rightWrist,
+    PoseLandmarkType.leftHip,
+    PoseLandmarkType.rightHip,
+    PoseLandmarkType.leftKnee,
+    PoseLandmarkType.rightKnee,
+    PoseLandmarkType.leftAnkle,
+    PoseLandmarkType.rightAnkle,
+  ];
+
+  static final _previousPositions = <PoseLandmarkType, Offset>{};
+  static DateTime? _lastUpdateTime;
+
   final List<Pose> poses;
   final Size imageSize;
   final Size canvasSize;
+  final bool mirrorHorizontal;
   final Duration animationDuration;
-
-  static final Map<PoseLandmarkType, Offset> _previousPositions = {};
-  static DateTime? _lastUpdateTime;
 
   PosePainter({
     required this.poses,
     required this.imageSize,
     required this.canvasSize,
+    this.mirrorHorizontal = false,
     this.animationDuration = const Duration(milliseconds: 300),
   });
 
@@ -59,27 +81,7 @@ class PosePainter extends CustomPainter {
     Paint linePaint,
     DateTime currentTime,
   ) {
-    final keyLandmarks = [
-      PoseLandmarkType.nose,
-      PoseLandmarkType.leftEye,
-      PoseLandmarkType.rightEye,
-      PoseLandmarkType.leftEar,
-      PoseLandmarkType.rightEar,
-      PoseLandmarkType.leftShoulder,
-      PoseLandmarkType.rightShoulder,
-      PoseLandmarkType.leftElbow,
-      PoseLandmarkType.rightElbow,
-      PoseLandmarkType.leftWrist,
-      PoseLandmarkType.rightWrist,
-      PoseLandmarkType.leftHip,
-      PoseLandmarkType.rightHip,
-      PoseLandmarkType.leftKnee,
-      PoseLandmarkType.rightKnee,
-      PoseLandmarkType.leftAnkle,
-      PoseLandmarkType.rightAnkle,
-    ];
-
-    for (final landmarkType in keyLandmarks) {
+    for (final landmarkType in _landmarkTypes) {
       final landmark = pose.landmarks[landmarkType];
       if (landmark != null) {
         final currentPoint = _translatePoint(landmark.x, landmark.y);
@@ -169,51 +171,30 @@ class PosePainter extends CustomPainter {
   }
 
   Offset _translatePoint(double x, double y) {
-    final imageAspectRatio = imageSize.width / imageSize.height;
-    final canvasAspectRatio = canvasSize.width / canvasSize.height;
+    final imageAspect = imageSize.width / imageSize.height;
+    final canvasAspect = canvasSize.width / canvasSize.height;
 
-    double scale;
-    double offsetX = 0;
-    double offsetY = 0;
+    final scale = imageAspect > canvasAspect
+        ? canvasSize.width / imageSize.width
+        : canvasSize.height / imageSize.height;
+    final offsetX = imageAspect > canvasAspect
+        ? 0.0
+        : (canvasSize.width - imageSize.width * scale) / 2;
+    final offsetY = imageAspect > canvasAspect
+        ? (canvasSize.height - imageSize.height * scale) / 2
+        : 0.0;
 
-    if (imageAspectRatio > canvasAspectRatio) {
-      scale = canvasSize.width / imageSize.width;
-      offsetY = (canvasSize.height - imageSize.height * scale) / 2;
-    } else {
-      scale = canvasSize.height / imageSize.height;
-      offsetX = (canvasSize.width - imageSize.width * scale) / 2;
-    }
-
-    final translatedX = x * scale + offsetX;
-    final translatedY = y * scale + offsetY;
-
-    return Offset(translatedX, translatedY);
+    final drawX = mirrorHorizontal ? imageSize.width - x : x;
+    return Offset(
+      drawX * scale + offsetX,
+      y * scale + offsetY,
+    );
   }
 
   void _updatePreviousPositions(List<Pose> poses, DateTime currentTime) {
     if (poses.isEmpty) return;
     final pose = poses.first;
-    final keyLandmarks = [
-      PoseLandmarkType.nose,
-      PoseLandmarkType.leftEye,
-      PoseLandmarkType.rightEye,
-      PoseLandmarkType.leftEar,
-      PoseLandmarkType.rightEar,
-      PoseLandmarkType.leftShoulder,
-      PoseLandmarkType.rightShoulder,
-      PoseLandmarkType.leftElbow,
-      PoseLandmarkType.rightElbow,
-      PoseLandmarkType.leftWrist,
-      PoseLandmarkType.rightWrist,
-      PoseLandmarkType.leftHip,
-      PoseLandmarkType.rightHip,
-      PoseLandmarkType.leftKnee,
-      PoseLandmarkType.rightKnee,
-      PoseLandmarkType.leftAnkle,
-      PoseLandmarkType.rightAnkle,
-    ];
-
-    for (final landmarkType in keyLandmarks) {
+    for (final landmarkType in _landmarkTypes) {
       final landmark = pose.landmarks[landmarkType];
       if (landmark != null) {
         final point = _translatePoint(landmark.x, landmark.y);
