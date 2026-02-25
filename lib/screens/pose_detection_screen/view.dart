@@ -35,6 +35,7 @@ class _PoseDetectionScreenState extends State<PoseDetectionScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey[900],
       body: _controller.initializeFuture == null
           ? const LoadingIndicator()
           : FutureBuilder<void>(
@@ -45,6 +46,7 @@ class _PoseDetectionScreenState extends State<PoseDetectionScreen> {
                     _controller.cameraController!.value.isInitialized) {
                   return CameraPreviewWidget(
                     cameraController: _controller.cameraController!,
+                    controller: _controller,
                   );
                 } else if (snapshot.hasError) {
                   return const ErrorMessage();
