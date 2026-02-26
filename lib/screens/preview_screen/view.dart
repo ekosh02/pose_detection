@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../constants/app_colors.dart';
-import 'controller.dart';
+import 'controllers/preview_controller.dart';
 
 class PreviewScreen extends StatelessWidget {
   PreviewScreen({super.key});

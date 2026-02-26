@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'controller.dart';
-import 'widgets/camera_preview.dart';
-import 'widgets/error_message.dart';
-import 'widgets/loading_indicator.dart';
+import 'package:pose_detection/constants/app_colors.dart';
+import 'controllers/pose_detection_controller.dart';
+import 'widgets/camera_preview_widget.dart';
+import 'widgets/error_message_widget.dart';
+import 'widgets/loading_indicator_widget.dart';
 
 class PoseDetectionScreen extends StatefulWidget {
   const PoseDetectionScreen({super.key});
@@ -21,9 +22,16 @@ class _PoseDetectionScreenState extends State<PoseDetectionScreen> {
   }
 
   Future<void> _init() async {
-    await _controller.initCamera(context);
-    if (!mounted) return;
-    setState(() {});
+    try {
+      await _controller.initCamera();
+      if (!mounted) return;
+      setState(() {});
+    } catch (error) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Camera error: $error')));
+    }
   }
 
   @override
@@ -35,9 +43,9 @@ class _PoseDetectionScreenState extends State<PoseDetectionScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[900],
+      backgroundColor: AppColors.background,
       body: _controller.initializeFuture == null
-          ? const LoadingIndicator()
+          ? const LoadingIndicatorWidget()
           : FutureBuilder<void>(
               future: _controller.initializeFuture,
               builder: (context, snapshot) {
@@ -49,9 +57,9 @@ class _PoseDetectionScreenState extends State<PoseDetectionScreen> {
                     controller: _controller,
                   );
                 } else if (snapshot.hasError) {
-                  return const ErrorMessage();
+                  return const ErrorMessageWidget();
                 } else {
-                  return const LoadingIndicator();
+                  return const LoadingIndicatorWidget();
                 }
               },
             ),

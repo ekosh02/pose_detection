@@ -1,7 +1,7 @@
 import 'dart:io' show Platform;
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
-import '../pose_detection_screen/view.dart';
+import '../../pose_detection_screen/view.dart';
 
 class PreviewController {
   void onOpenCameraPressed(BuildContext context) {

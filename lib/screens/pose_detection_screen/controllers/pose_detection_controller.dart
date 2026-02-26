@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:typed_data';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -19,39 +18,33 @@ class PoseDetectionController {
   Size get imageSize => imageSizeNotifier.value;
   bool get cameraVisible => cameraVisibleNotifier.value;
 
-  Future<void> initCamera(BuildContext context) async {
-    try {
-      final cameras = await availableCameras();
-      if (cameras.isEmpty) {
-        throw CameraException('no_camera', 'No available cameras');
-      }
-
-      final frontCamera = cameras.firstWhere(
-        (c) => c.lensDirection == CameraLensDirection.front,
-        orElse: () => cameras.first,
-      );
-
-      final controller = CameraController(
-        frontCamera,
-        ResolutionPreset.medium,
-        enableAudio: false,
-        imageFormatGroup: Platform.isAndroid
-            ? ImageFormatGroup.nv21
-            : ImageFormatGroup.bgra8888,
-      );
-
-      final initFuture = controller.initialize();
-      cameraController = controller;
-      initializeFuture = initFuture;
-
-      await initFuture;
-
-      controller.startImageStream(_processCameraImage);
-    } catch (error) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Camera error: $error')));
+  Future<void> initCamera() async {
+    final cameras = await availableCameras();
+    if (cameras.isEmpty) {
+      throw CameraException('no_camera', 'No available cameras');
     }
+
+    final frontCamera = cameras.firstWhere(
+      (c) => c.lensDirection == CameraLensDirection.front,
+      orElse: () => cameras.first,
+    );
+
+    final controller = CameraController(
+      frontCamera,
+      ResolutionPreset.medium,
+      enableAudio: false,
+      imageFormatGroup: Platform.isAndroid
+          ? ImageFormatGroup.nv21
+          : ImageFormatGroup.bgra8888,
+    );
+
+    final initFuture = controller.initialize();
+    cameraController = controller;
+    initializeFuture = initFuture;
+
+    await initFuture;
+
+    controller.startImageStream(_processCameraImage);
   }
 
   Future<void> _processCameraImage(CameraImage image) async {
@@ -120,8 +113,7 @@ class PoseDetectionController {
   (InputImageRotation, int)? _getRotation(CameraDescription camera) {
     final sensorOrientation = camera.sensorOrientation;
     if (Platform.isIOS) {
-      final rotation =
-          InputImageRotationValue.fromRawValue(sensorOrientation);
+      final rotation = InputImageRotationValue.fromRawValue(sensorOrientation);
       if (rotation == null) return null;
       return (rotation, sensorOrientation);
     }
@@ -146,8 +138,7 @@ class PoseDetectionController {
     required int rotationDegrees,
   }) {
     if (Platform.isIOS) return Size(width, height);
-    final isRotated90or270 =
-        rotationDegrees == 90 || rotationDegrees == 270;
+    final isRotated90or270 = rotationDegrees == 90 || rotationDegrees == 270;
     return isRotated90or270 ? Size(height, width) : Size(width, height);
   }
 
@@ -167,8 +158,7 @@ class PoseDetectionController {
     final yPixelStride = yPlane.bytesPerPixel ?? 1;
     for (int row = 0; row < height; row++) {
       for (int col = 0; col < width; col++) {
-        nv21[row * width + col] =
-            yBytes[row * yRowStride + col * yPixelStride];
+        nv21[row * width + col] = yBytes[row * yRowStride + col * yPixelStride];
       }
     }
 

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_mlkit_pose_detection/google_mlkit_pose_detection.dart';
 
-class PosePainter extends CustomPainter {
+class PosePainterUtil extends CustomPainter {
   static const _landmarkTypes = [
     PoseLandmarkType.nose,
     PoseLandmarkType.leftEye,
@@ -31,7 +31,7 @@ class PosePainter extends CustomPainter {
   final bool mirrorHorizontal;
   final Duration animationDuration;
 
-  PosePainter({
+  PosePainterUtil({
     required this.poses,
     required this.imageSize,
     required this.canvasSize,
@@ -185,10 +185,7 @@ class PosePainter extends CustomPainter {
         : 0.0;
 
     final drawX = mirrorHorizontal ? imageSize.width - x : x;
-    return Offset(
-      drawX * scale + offsetX,
-      y * scale + offsetY,
-    );
+    return Offset(drawX * scale + offsetX, y * scale + offsetY);
   }
 
   void _updatePreviousPositions(List<Pose> poses, DateTime currentTime) {
