@@ -74,6 +74,7 @@ class PosePainterUtil extends CustomPainter {
     _lastUpdateTime = currentTime;
   }
 
+
   void _drawPose(
     Canvas canvas,
     Pose pose,

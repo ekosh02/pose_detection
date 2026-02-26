@@ -6,12 +6,16 @@ class CameraHeaderWidget extends StatelessWidget {
     super.key,
     required this.onBackPressed,
     required this.onToggleCameraVisibility,
+    required this.onToggleHeadBlur,
     required this.cameraVisible,
+    required this.headBlur,
   });
 
   final VoidCallback onBackPressed;
   final VoidCallback onToggleCameraVisibility;
+  final VoidCallback onToggleHeadBlur;
   final bool cameraVisible;
+  final bool headBlur;
 
   @override
   Widget build(BuildContext context) {
@@ -33,6 +37,15 @@ class CameraHeaderWidget extends StatelessWidget {
             onPressed: onToggleCameraVisibility,
             icon: Icon(cameraVisible ? Icons.visibility : Icons.visibility_off),
             tooltip: cameraVisible ? 'Скрыть камеру' : 'Показать камеру',
+          ),
+        ),
+        Positioned(
+          top: MediaQuery.of(context).padding.top + 16,
+          right: 80,
+          child: CustomIconButton(
+            onPressed: onToggleHeadBlur,
+            icon: Icon(headBlur ? Icons.face : Icons.face_retouching_off),
+            tooltip: headBlur ? 'Отключить размытие головы' : 'Включить размытие головы',
           ),
         ),
       ],

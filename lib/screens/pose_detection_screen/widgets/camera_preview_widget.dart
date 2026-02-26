@@ -32,26 +32,34 @@ class _CameraPreviewWidgetState extends State<CameraPreviewWidget> {
             return ValueListenableBuilder<bool>(
               valueListenable: widget.controller.cameraVisibleNotifier,
               builder: (context, cameraVisible, child) {
-                return Stack(
-                  children: [
-                    if (cameraVisible) ...[
-                      CameraViewWidget(
-                        cameraController: widget.cameraController,
-                      ),
-                    ],
-                    CameraOverlayWidget(
-                      poses: poses,
-                      imageSize: imageSize,
-                      cameraVisible: cameraVisible,
-                    ),
+                return ValueListenableBuilder<bool>(
+                  valueListenable: widget.controller.headBlurNotifier,
+                  builder: (context, headBlur, child) {
+                    return Stack(
+                      children: [
+                        if (cameraVisible) ...[
+                          CameraViewWidget(
+                            cameraController: widget.cameraController,
+                          ),
+                        ],
+                        CameraOverlayWidget(
+                          poses: poses,
+                          imageSize: imageSize,
+                          cameraVisible: cameraVisible,
+                          headBlur: headBlur,
+                        ),
 
-                    CameraHeaderWidget(
-                      onBackPressed: () => Navigator.of(context).pop(),
-                      onToggleCameraVisibility:
-                          widget.controller.toggleCameraVisibility,
-                      cameraVisible: cameraVisible,
-                    ),
-                  ],
+                        CameraHeaderWidget(
+                          onBackPressed: () => Navigator.of(context).pop(),
+                          onToggleCameraVisibility:
+                              widget.controller.toggleCameraVisibility,
+                          onToggleHeadBlur: widget.controller.toggleHeadBlur,
+                          cameraVisible: cameraVisible,
+                          headBlur: headBlur,
+                        ),
+                      ],
+                    );
+                  },
                 );
               },
             );

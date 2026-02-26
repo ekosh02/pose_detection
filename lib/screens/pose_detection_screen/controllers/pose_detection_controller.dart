@@ -13,10 +13,12 @@ class PoseDetectionController {
   final ValueNotifier<List<Pose>> posesNotifier = ValueNotifier([]);
   final ValueNotifier<Size> imageSizeNotifier = ValueNotifier(Size(640, 480));
   final ValueNotifier<bool> cameraVisibleNotifier = ValueNotifier(true);
+  final ValueNotifier<bool> headBlurNotifier = ValueNotifier(false);
 
   List<Pose> get poses => posesNotifier.value;
   Size get imageSize => imageSizeNotifier.value;
   bool get cameraVisible => cameraVisibleNotifier.value;
+  bool get headBlur => headBlurNotifier.value;
 
   Future<void> initCamera() async {
     final cameras = await availableCameras();
@@ -191,6 +193,10 @@ class PoseDetectionController {
     cameraVisibleNotifier.value = !cameraVisibleNotifier.value;
   }
 
+  void toggleHeadBlur() {
+    headBlurNotifier.value = !headBlurNotifier.value;
+  }
+
   void dispose() {
     cameraController?.stopImageStream();
     cameraController?.dispose();
@@ -198,5 +204,6 @@ class PoseDetectionController {
     posesNotifier.dispose();
     imageSizeNotifier.dispose();
     cameraVisibleNotifier.dispose();
+    headBlurNotifier.dispose();
   }
 }
